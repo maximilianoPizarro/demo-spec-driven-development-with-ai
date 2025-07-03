@@ -1,0 +1,12 @@
+
+schemaVersion: 2.2.0
+metadata:
+  name: demo-spec-driven-development-with-ai
+components:
+  - name: tools
+    container:
+      image: quay.io/che-incubator/cli-ai-tools:latest
+      memoryLimit: 10G
+      memoryRequest: 2G
+      cpuRequest: 1000m
+      cpuLimit: 5000m
