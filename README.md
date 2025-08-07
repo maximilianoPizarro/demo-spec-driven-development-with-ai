@@ -50,3 +50,7 @@ ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md
 ```
 
 The AI will read your specification and begin building your application.
+
+## Example Project: URL Shortener
+
+To see a complete, working example, check out the [`demo-url-shortener`](https://github.com/akurinnoy/demo-spec-driven-development-with-ai/tree/demo-url-shortener) branch. It contains the exact [spec.md](https://github.com/akurinnoy/demo-spec-driven-development-with-ai/blob/demo-url-shortener/spec.md) used to generate a full-stack URL shortener and all of the resulting source code.
