@@ -1,4 +1,6 @@
-# Spec-Driven Development with AI in Eclipse Che
+# Spec-Driven Development with AI in OpenShift Dev Spaces
+
+[![OpenShift Dev Spaces](https://www.eclipse.org/che/contribute.svg)](https://workspaces.openshift.com#https://github.com/maximilianoPizarro/demo-spec-driven-development-with-ai/)
 
 This repository provides a template to demonstrate and experiment with the concept of **Specification-Driven Development** using AI assistants in a pre-configured Eclipse Che workspace.
 
