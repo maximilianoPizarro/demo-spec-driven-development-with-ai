@@ -17,7 +17,12 @@ components:
         - name: confd
           path: /mnt/data/conf.d
         - name: functions
-          path: /mnt/data/functions    
+          path: /mnt/data/functions
+      env:
+        - name: RA_AID_PROVIDER
+          value: ollama
+        - name: RA_AID_MODEL
+          value: llama3:8b-instruct-q4_0          
   - name: ollama
     attributes:
       container-overrides:
