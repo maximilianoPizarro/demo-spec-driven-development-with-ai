@@ -37,7 +37,13 @@ commands:
       label: 'OpenShift apply secret (OpenShift cluster)'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'oc apply -f secret.yaml'      
+      commandLine: 'oc apply -f secret.yaml'
+  - id: ra-aid-gen-spec
+    exec:
+      label: 'OpenShift apply secret (OpenShift cluster)'
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: ' ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md'     
 events:
   preStart:
     - oc-add-secret     
