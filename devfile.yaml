@@ -11,6 +11,12 @@ components:
       memoryRequest: 2G
       cpuRequest: 1000m
       cpuLimit: 5000m
+      init:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /mnt/data/completions /mnt/data/conf.d /mnt/data/functions && chown user:user /mnt/data"]
+          securityContext:
+            runAsUser: 0       
   - name: ollama
     attributes:
       container-overrides:
