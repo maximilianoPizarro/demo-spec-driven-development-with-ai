@@ -1,7 +1,8 @@
-
-schemaVersion: 2.2.0
+schemaVersion: 2.3.0
 metadata:
   name: demo-spec-driven-development-with-ai
+attributes:
+  controller.devfile.io/storage-type: ephemeral  
 components:
   - name: tools
     container:
@@ -10,3 +11,35 @@ components:
       memoryRequest: 2G
       cpuRequest: 1000m
       cpuLimit: 5000m
+  - name: ollama
+    attributes:
+      container-overrides:
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 12Gi
+            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
+          requests:
+            cpu: 1000m
+            memory: 8Gi
+            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
+    container:
+      image: docker.io/ollama/ollama:latest
+      mountSources: true
+      sourceMapping: /.ollama
+commands:
+  - id: pullmodel
+    exec:
+      component: ollama
+      commandLine: "ollama pull llama3:8b-instruct-q4_0"
+  - id: oc-add-secret
+    exec:
+      label: 'OpenShift apply secret (OpenShift cluster)'
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: 'oc apply -f secret.yaml'      
+events:
+  preStart:
+    - oc-add-secret     
+  postStart:
+    - pullmodel     
