@@ -22,7 +22,9 @@ components:
         - name: RA_AID_PROVIDER
           value: ollama
         - name: RA_AID_MODEL
-          value: llama3:8b-instruct-q4_0          
+          value: llama3:8b-instruct-q4_0
+        - name: OLLAMA_HOST
+          value: http://localhost:11434          
   - name: ollama
     attributes:
       container-overrides:
