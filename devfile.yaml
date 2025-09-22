@@ -30,7 +30,9 @@ components:
         - name: OLLAMA_API_BASE
           value: http://localhost:11434
         - name: DEVSPACES_API_KEY
-          value: ZGV2c3BhY2Vz          
+          value: ZGV2c3BhY2Vz
+        - name: ANTHROPIC_API_KEY
+          value: ZGV2c3BhY2Vz                    
   - name: ollama
     attributes:
       container-overrides:
