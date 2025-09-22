@@ -11,11 +11,13 @@ components:
       memoryRequest: 2G
       cpuRequest: 1000m
       cpuLimit: 5000m
-    init: 
-      - name: fix-permissions
-        image: busybox
-        command: ["sh", "-c", "mkdir -p /mnt/data/completions /mnt/data/conf.d /mnt/data/functions"]
-        mountSources: true
+      volumeMounts:
+        - name: completions
+          path: /mnt/data/completions
+        - name: conf.d
+          path: /mnt/data/conf.d
+        - name: functions
+          path: /mnt/data/functions    
   - name: ollama
     attributes:
       container-overrides:
@@ -32,6 +34,15 @@ components:
       image: docker.io/ollama/ollama:latest
       mountSources: true
       sourceMapping: /.ollama
+  - name: completions
+    volume:
+      size: 512Mi
+  - name: conf.d
+    volume:
+      size: 512Mi
+  - name: functions
+    volume:
+      size: 512Mi      
 commands:
   - id: pullmodel
     exec:
