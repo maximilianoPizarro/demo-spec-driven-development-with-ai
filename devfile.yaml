@@ -33,7 +33,7 @@ commands:
       component: ollama
       commandLine: "ollama pull llama3:8b-instruct-q4_0"
   - id: oc-add-secret
-    apply:
+    exec:
       label: 'OpenShift apply secret (OpenShift cluster)'
       component: tools
       workingDir: ${PROJECT_SOURCE}
@@ -45,7 +45,6 @@ commands:
       workingDir: ${PROJECT_SOURCE}
       commandLine: ' ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md'     
 events:
-  preStart:
-    - oc-add-secret     
   postStart:
+    - oc-add-secret  
     - pullmodel     
