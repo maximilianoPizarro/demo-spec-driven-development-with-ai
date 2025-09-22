@@ -33,7 +33,7 @@ commands:
       component: ollama
       commandLine: "ollama pull llama3:8b-instruct-q4_0"
   - id: oc-add-secret
-    exec:
+    apply:
       label: 'OpenShift apply secret (OpenShift cluster)'
       component: tools
       workingDir: ${PROJECT_SOURCE}
