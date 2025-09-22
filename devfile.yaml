@@ -27,7 +27,7 @@ components:
           value: ollama
         - name: RA_AID_HOST
           value: http://ollama:11434          
-        - name: OLLAMA_HOST
+        - name: OLLAMA_API_BASE
           value: http://localhost:11434
         - name: DEVSPACES_API_KEY
           value: ZGV2c3BhY2Vz          
