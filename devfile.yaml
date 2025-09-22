@@ -23,6 +23,10 @@ components:
           value: ollama
         - name: RA_AID_MODEL
           value: llama3:8b-instruct-q4_0
+        - name: RA_AID_BACKEND
+          value: ollama
+        - name: RA_AID_HOST
+          value: http://ollama:11434          
         - name: OLLAMA_HOST
           value: http://localhost:11434
         - name: DEVSPACES_API_KEY
@@ -68,7 +72,7 @@ commands:
       label: 'RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: ' ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md'     
+      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md'     
 events:
   postStart:
     - oc-add-secret  
