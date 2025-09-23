@@ -18,6 +18,11 @@ components:
           path: /mnt/data/conf.d
         - name: functions
           path: /mnt/data/functions
+      endpoints:
+        - exposure: public
+          name: ra-aid
+          protocol: https
+          targetPort: 3000          
       env:
         - name: RA_AID_PROVIDER
           value: ollama
@@ -74,7 +79,13 @@ commands:
       label: 'RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ollama --model llama3:8b-instruct-q4_0'     
+      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ollama --model llama3:8b-instruct-q4_0'
+  - id: ra-aid-server
+    exec:
+      label: 'RA Aid run server'
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: 'ra-aid --server --server-host 0.0.0.0 --server-port 3000'          
 events:
   postStart:
     - oc-add-secret  
