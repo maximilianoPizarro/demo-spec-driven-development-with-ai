@@ -18,6 +18,8 @@ components:
           path: /mnt/data/conf.d
         - name: functions
           path: /mnt/data/functions
+        - name: config-volume
+          path: /home/user/.config           
       endpoints:
         - exposure: public
           name: ra-aid
@@ -61,6 +63,9 @@ components:
     volume:
       size: 512Mi
   - name: functions
+    volume:
+      size: 512Mi
+  - name: config-volume 
     volume:
       size: 512Mi      
 commands:
