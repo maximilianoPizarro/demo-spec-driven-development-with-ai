@@ -78,4 +78,3 @@ commands:
 events:
   postStart:
     - oc-add-secret  
-    - pullmodel     
