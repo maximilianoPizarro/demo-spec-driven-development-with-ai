@@ -37,7 +37,7 @@ components:
         - name: OLLAMA_BASE_URL
           value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443
         - name: OPENAI_API_KEY
-          value: MzkxN2MwNTlmNmFlMDY2ZWIyYjQ1OTEyMjM0YzYxZjI=                
+          value: ${DEVSPACES_API_KEY}                
   - name: completions
     volume:
       size: 512Mi
