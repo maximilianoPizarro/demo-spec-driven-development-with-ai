@@ -29,33 +29,17 @@ components:
         - name: RA_AID_PROVIDER
           value: ollama
         - name: RA_AID_MODEL
-          value: llama3:8b-instruct-q4_0
+          value: llama3:llama-3-2-3b
         - name: RA_AID_BACKEND
           value: ollama      
         - name: OLLAMA_API_BASE
-          value: http://localhost:11434
+          value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443
         - name: OLLAMA_BASE_URL
-          value: http://localhost:11434
+          value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443
         - name: OPENAI_API_KEY
           value: ZGV2c3BhY2Vz             
         - name: DEVSPACES_API_KEY
           value: ZGV2c3BhY2Vz                
-  - name: ollama
-    attributes:
-      container-overrides:
-        resources:
-          limits:
-            cpu: 4000m
-            memory: 12Gi
-            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
-          requests:
-            cpu: 1000m
-            memory: 8Gi
-            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
-    container:
-      image: docker.io/ollama/ollama:latest
-      mountSources: true
-      sourceMapping: /.ollama
   - name: completions
     volume:
       size: 512Mi
@@ -84,7 +68,7 @@ commands:
       label: 'RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ollama --model llama3:8b-instruct-q4_0'
+      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ollama --model llama3:llama-3-2-3b'
   - id: ra-aid-server
     exec:
       label: 'RA Aid run server'
