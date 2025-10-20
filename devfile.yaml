@@ -31,11 +31,7 @@ components:
         - name: RA_AID_MODEL
           value: llama-3-2-3b
         - name: RA_AID_BACKEND
-          value: openai      
-        - name: OPENAI_API_BASE
-          value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1
-        - name: OPENAI_API_KEY
-          value: ${DEVSPACES_API_KEY}                
+          value: openai          
   - name: completions
     volume:
       size: 512Mi
