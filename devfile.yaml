@@ -29,11 +29,11 @@ components:
         - name: RA_AID_PROVIDER
           value: openai
         - name: RA_AID_MODEL
-          value: llama3:llama-3-2-3b
+          value: llama-3-2-3b
         - name: RA_AID_BACKEND
           value: openai      
         - name: OPENAI_API_BASE
-          value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443
+          value: https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1
         - name: OPENAI_API_KEY
           value: ${DEVSPACES_API_KEY}                
   - name: completions
@@ -60,7 +60,7 @@ commands:
       label: 'RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider openai --model llama3:llama-3-2-3b'
+      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider openai --model llama-3-2-3b'
   - id: ra-aid-server
     exec:
       label: 'RA Aid run server'
