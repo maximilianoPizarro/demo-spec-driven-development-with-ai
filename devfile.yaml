@@ -76,4 +76,3 @@ commands:
         git checkout partial-migration
         echo "Coolstore repository cloned and switched to partial-migration branch successfully!"
         '
-events: {}     
