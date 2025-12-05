@@ -6,7 +6,7 @@ attributes:
 components:
   - name: tools
     container:
-      image: quay.io/maximilianopizarro/lightspeed-demo:latest
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
       memoryLimit: 4Gi
       memoryRequest: 2Gi
       cpuRequest: 1000m
