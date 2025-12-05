@@ -43,38 +43,19 @@ commands:
       label: '1. Generate Continue config from secret variables'
       component: tools
       commandLine: >
-        bash -c '
-        # Set default values if variables are not available
-        LLM_SERVER_ID="${LLM_SERVER_ID:-llama-3-2-3b}"
-        LLM_SERVER_URL="${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}"
-        
-        # Create directory if it doesn'\''t exist
-        mkdir -p /home/user/.continue || true
-        
-        # Generate config file
-        cat > /home/user/.continue/config.json <<EOF
-        {
-          "models": [
-            {
-              "title": "MaaS ${LLM_SERVER_ID}",
-              "model": "${LLM_SERVER_ID}",
-              "apiBase": "${LLM_SERVER_URL}",
-              "provider": "openai"
-            }
-          ],
-          "tabAutocompleteModel": {
-            "title": "MaaS ${LLM_SERVER_ID}",
-            "provider": "openai",
-            "model": "${LLM_SERVER_ID}"
-          },
-          "allowAnonymousTelemetry": false
-        }
-        EOF
-        
-        echo "Continue config generated successfully at /home/user/.continue/config.json"
-        echo "Using LLM_SERVER_ID: ${LLM_SERVER_ID}"
-        echo "Using LLM_SERVER_URL: ${LLM_SERVER_URL}"
-        '
+        bash -c "
+        set +e
+        LLM_SERVER_ID=\"\${LLM_SERVER_ID:-llama-3-2-3b}\"
+        LLM_SERVER_URL=\"\${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}\"
+        mkdir -p /home/user/.continue 2>/dev/null
+        printf '{\n  \"models\": [\n    {\n      \"title\": \"MaaS %s\",\n      \"model\": \"%s\",\n      \"apiBase\": \"%s\",\n      \"provider\": \"openai\"\n    }\n  ],\n  \"tabAutocompleteModel\": {\n    \"title\": \"MaaS %s\",\n    \"provider\": \"openai\",\n    \"model\": \"%s\"\n  },\n  \"allowAnonymousTelemetry\": false\n}' \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_URL}\" \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_ID}\" > /home/user/.continue/config.json 2>/dev/null
+        if [ -f /home/user/.continue/config.json ]; then
+          echo \"Continue config generated successfully\"
+        else
+          echo \"Warning: Could not generate config file, but continuing...\"
+        fi
+        exit 0
+        "
   - id: step2-ra-aid-gen-spec
     exec:
       label: '2. RA Aid gen with spec'
