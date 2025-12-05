@@ -25,37 +25,6 @@ components:
           name: ra-aid
           protocol: https
           targetPort: 3000          
-      env:
-        - name: RA_AID_PROVIDER
-          value: ollama
-        - name: RA_AID_MODEL
-          value: llama3:8b-instruct-q4_0
-        - name: RA_AID_BACKEND
-          value: ollama      
-        - name: OLLAMA_API_BASE
-          value: http://localhost:11434
-        - name: OLLAMA_BASE_URL
-          value: http://localhost:11434
-        - name: OPENAI_API_KEY
-          value: ZGV2c3BhY2Vz             
-        - name: DEVSPACES_API_KEY
-          value: ZGV2c3BhY2Vz                
-  - name: ollama
-    attributes:
-      container-overrides:
-        resources:
-          limits:
-            cpu: 4000m
-            memory: 12Gi
-            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
-          requests:
-            cpu: 1000m
-            memory: 8Gi
-            # nvidia.com/gpu: 1 # Uncomment this if the pod shall be scheduled only on a GPU node
-    container:
-      image: docker.io/ollama/ollama:latest
-      mountSources: true
-      sourceMapping: /.ollama
   - name: completions
     volume:
       size: 512Mi
@@ -69,29 +38,58 @@ components:
     volume:
       size: 512Mi      
 commands:
-  - id: pullmodel
+  - id: step1-generate-continue-config
     exec:
-      component: ollama
-      commandLine: "ollama pull llama3:8b-instruct-q4_0"
-  - id: oc-add-secret
+      label: '1. Generate Continue config from secret variables'
+      component: tools
+      commandLine: >
+        bash -c '
+        mkdir -p /home/user/.continue &&
+        cat > /home/user/.continue/config.json <<EOF
+        {
+          "models": [
+            {
+              "title": "MaaS ${LLM_SERVER_ID}",
+              "model": "${LLM_SERVER_ID}",
+              "apiBase": "${LLM_SERVER_URL}",
+              "provider": "openai"
+            }
+          ],
+          "tabAutocompleteModel": {
+            "title": "MaaS ${LLM_SERVER_ID}",
+            "provider": "openai",
+            "model": "${LLM_SERVER_ID}"
+          },
+          "allowAnonymousTelemetry": false
+        }
+        EOF
+        '
+  - id: step2-ra-aid-gen-spec
     exec:
-      label: 'OpenShift apply secret (OpenShift cluster)'
+      label: '2. RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'oc apply -f secret.yaml'
-  - id: ra-aid-gen-spec
+      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ${RA_AID_PROVIDER} --model ${RA_AID_MODEL}'
+  - id: step3-ra-aid-server
     exec:
-      label: 'RA Aid gen with spec'
+      label: '3. RA Aid run server'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ollama --model llama3:8b-instruct-q4_0'
-  - id: ra-aid-server
+      commandLine: 'ra-aid --server --server-host 0.0.0.0 --server-port 3000'
+  - id: step4-clone-coolstore
     exec:
-      label: 'RA Aid run server'
+      label: '4. Clone Coolstore JavaEE to Quarkus demo'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --server --server-host 0.0.0.0 --server-port 3000'          
+      commandLine: >
+        bash -c '
+        echo "Cloning Coolstore repository..."
+        git clone https://github.com/konveyor-ecosystem/coolstore.git
+        cd coolstore
+        echo "Switching to partial-migration branch..."
+        git checkout partial-migration
+        echo "Coolstore repository cloned and switched to partial-migration branch successfully!"
+        '
 events:
   postStart:
-    - oc-add-secret  
-    - pullmodel     
+    - step1-generate-continue-config     
