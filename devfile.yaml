@@ -6,73 +6,40 @@ attributes:
 components:
   - name: tools
     container:
-      image: quay.io/che-incubator/cli-ai-tools:latest
-      memoryLimit: 10G
-      memoryRequest: 2G
+      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      memoryLimit: 4Gi
+      memoryRequest: 2Gi
       cpuRequest: 1000m
-      cpuLimit: 5000m
+      cpuLimit: 4000m
+      mountSources: true
       volumeMounts:
-        - name: completions
-          path: /mnt/data/completions
-        - name: confd
-          path: /mnt/data/conf.d
-        - name: functions
-          path: /mnt/data/functions
         - name: config-volume
-          path: /home/user/.config           
+          path: /home/user/.config
       endpoints:
         - exposure: public
-          name: ra-aid
-          protocol: https
-          targetPort: 3000          
-  - name: completions
-    volume:
-      size: 512Mi
-  - name: confd
-    volume:
-      size: 512Mi
-  - name: functions
-    volume:
-      size: 512Mi
+          name: coolstore
+          protocol: http
+          targetPort: 8080
   - name: config-volume 
     volume:
       size: 512Mi      
 commands:
-  - id: step1-copy-continue-config
+  - id: copyconfig
     exec:
-      label: '1. Copy Continue config from repository'
       component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: >
-        sh -c 'mkdir -p /home/user/.continue && 
-        [ -f continue-config.json ] && cp continue-config.json /home/user/.continue/config.json || true; 
-        exit 0'
-  - id: step2-ra-aid-gen-spec
+      commandLine: 'mkdir -p /home/user/.continue && cp ${PROJECT_SOURCE}/continue-config.json /home/user/.continue/config.json'
+  - id: build-coolstore
     exec:
-      label: '2. RA Aid gen with spec'
+      label: 'Build Coolstore application'
       component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: >
-        sh -c 'mkdir -p /home/user/.continue && 
-        [ -f continue-config.json ] && cp continue-config.json /home/user/.continue/config.json || true; 
-        ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ${RA_AID_PROVIDER} --model ${RA_AID_MODEL}'
-  - id: step3-ra-aid-server
+      workingDir: ${PROJECT_SOURCE}/coolstore
+      commandLine: 'mvn clean install -DskipTests'
+  - id: run-coolstore
     exec:
-      label: '3. RA Aid run server'
+      label: 'Run Coolstore application'
       component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --server --server-host 0.0.0.0 --server-port 3000'
-  - id: step4-clone-coolstore
-    exec:
-      label: '4. Clone Coolstore JavaEE to Quarkus demo'
-      component: tools
-      workingDir: ${PROJECT_SOURCE}
-      commandLine: >
-        bash -c '
-        echo "Cloning Coolstore repository..."
-        git clone https://github.com/konveyor-ecosystem/coolstore.git
-        cd coolstore
-        echo "Switching to partial-migration branch..."
-        git checkout partial-migration
-        echo "Coolstore repository cloned and switched to partial-migration branch successfully!"
-        '
+      workingDir: ${PROJECT_SOURCE}/coolstore
+      commandLine: 'mvn quarkus:dev'
+events:
+  postStart:
+    - copyconfig
