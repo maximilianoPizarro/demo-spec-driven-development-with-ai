@@ -44,25 +44,18 @@ commands:
       component: tools
       workingDir: ${PROJECT_SOURCE}
       commandLine: >
-        bash -c "
-        (
-          set +e
-          mkdir -p /home/user/.continue 2>/dev/null || true
-          if [ -f continue-config.json ]; then
-            cp continue-config.json /home/user/.continue/config.json
-            echo \"Continue config copied successfully\"
-          else
-            echo \"Warning: continue-config.json not found in repository, but continuing...\"
-          fi
-        ) || true
-        exit 0
-        "
+        sh -c 'mkdir -p /home/user/.continue && 
+        [ -f continue-config.json ] && cp continue-config.json /home/user/.continue/config.json || true; 
+        exit 0'
   - id: step2-ra-aid-gen-spec
     exec:
       label: '2. RA Aid gen with spec'
       component: tools
       workingDir: ${PROJECT_SOURCE}
-      commandLine: 'ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ${RA_AID_PROVIDER} --model ${RA_AID_MODEL}'
+      commandLine: >
+        sh -c 'mkdir -p /home/user/.continue && 
+        [ -f continue-config.json ] && cp continue-config.json /home/user/.continue/config.json || true; 
+        ra-aid --use-aider --cowboy-mode --show-cost --track-cost --msg-file spec.md --provider ${RA_AID_PROVIDER} --model ${RA_AID_MODEL}'
   - id: step3-ra-aid-server
     exec:
       label: '3. RA Aid run server'
@@ -83,6 +76,4 @@ commands:
         git checkout partial-migration
         echo "Coolstore repository cloned and switched to partial-migration branch successfully!"
         '
-events:
-  postStart:
-    - step1-copy-continue-config     
+events: {}     
