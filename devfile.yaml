@@ -15,8 +15,6 @@ components:
       volumeMounts:
         - name: config-volume
           path: /home/user/.config
-        - name: vscode-extensions-volume
-          path: /home/user/.vscode-server/extensions
       endpoints:
         - exposure: public
           name: coolstore
@@ -24,15 +22,12 @@ components:
           targetPort: 8080
   - name: config-volume 
     volume:
-      size: 512Mi
-  - name: vscode-extensions-volume
-    volume:
-      size: 1Gi      
+      size: 512Mi      
 commands:
   - id: copyconfig
     exec:
       component: tools
-      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh"'
+      commandLine: 'bash -c "if [ -f ${PROJECT_SOURCE}/setup-continue-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh; else echo \"Warning: setup-continue-config.sh not found, skipping Continue config\"; fi"'
   - id: build-coolstore
     exec:
       label: 'Build Coolstore application'
