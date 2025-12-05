@@ -44,7 +44,14 @@ commands:
       component: tools
       commandLine: >
         bash -c '
-        mkdir -p /home/user/.continue &&
+        # Set default values if variables are not available
+        LLM_SERVER_ID="${LLM_SERVER_ID:-llama-3-2-3b}"
+        LLM_SERVER_URL="${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}"
+        
+        # Create directory if it doesn'\''t exist
+        mkdir -p /home/user/.continue || true
+        
+        # Generate config file
         cat > /home/user/.continue/config.json <<EOF
         {
           "models": [
@@ -63,6 +70,10 @@ commands:
           "allowAnonymousTelemetry": false
         }
         EOF
+        
+        echo "Continue config generated successfully at /home/user/.continue/config.json"
+        echo "Using LLM_SERVER_ID: ${LLM_SERVER_ID}"
+        echo "Using LLM_SERVER_URL: ${LLM_SERVER_URL}"
         '
   - id: step2-ra-aid-gen-spec
     exec:
