@@ -44,16 +44,35 @@ commands:
       component: tools
       commandLine: >
         bash -c "
-        set +e
-        LLM_SERVER_ID=\"\${LLM_SERVER_ID:-llama-3-2-3b}\"
-        LLM_SERVER_URL=\"\${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}\"
-        mkdir -p /home/user/.continue 2>/dev/null
-        printf '{\n  \"models\": [\n    {\n      \"title\": \"MaaS %s\",\n      \"model\": \"%s\",\n      \"apiBase\": \"%s\",\n      \"provider\": \"openai\"\n    }\n  ],\n  \"tabAutocompleteModel\": {\n    \"title\": \"MaaS %s\",\n    \"provider\": \"openai\",\n    \"model\": \"%s\"\n  },\n  \"allowAnonymousTelemetry\": false\n}' \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_URL}\" \"\${LLM_SERVER_ID}\" \"\${LLM_SERVER_ID}\" > /home/user/.continue/config.json 2>/dev/null
-        if [ -f /home/user/.continue/config.json ]; then
-          echo \"Continue config generated successfully\"
-        else
-          echo \"Warning: Could not generate config file, but continuing...\"
-        fi
+        (
+          set +e
+          LLM_SERVER_ID=\"\${LLM_SERVER_ID:-llama-3-2-3b}\"
+          LLM_SERVER_URL=\"\${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}\"
+          mkdir -p /home/user/.continue 2>/dev/null || true
+          cat > /home/user/.continue/config.json <<EOFCONFIG
+        {
+          \"models\": [
+            {
+              \"title\": \"MaaS \${LLM_SERVER_ID}\",
+              \"model\": \"\${LLM_SERVER_ID}\",
+              \"apiBase\": \"\${LLM_SERVER_URL}\",
+              \"provider\": \"openai\"
+            }
+          ],
+          \"tabAutocompleteModel\": {
+            \"title\": \"MaaS \${LLM_SERVER_ID}\",
+            \"provider\": \"openai\",
+            \"model\": \"\${LLM_SERVER_ID}\"
+          },
+          \"allowAnonymousTelemetry\": false
+        }
+        EOFCONFIG
+          if [ -f /home/user/.continue/config.json ]; then
+            echo \"Continue config generated successfully\"
+          else
+            echo \"Warning: Could not generate config file, but continuing...\"
+          fi
+        ) || true
         exit 0
         "
   - id: step2-ra-aid-gen-spec
