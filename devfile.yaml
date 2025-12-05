@@ -28,10 +28,6 @@ commands:
     exec:
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh"'
-  - id: install-mta-extension
-    exec:
-      component: tools
-      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x install-mta-extension.sh && ./install-mta-extension.sh || echo \"MTA extension installation skipped (VS Code CLI not available)\""'
   - id: build-coolstore
     exec:
       label: 'Build Coolstore application'
@@ -47,4 +43,3 @@ commands:
 events:
   postStart:
     - copyconfig
-    - install-mta-extension

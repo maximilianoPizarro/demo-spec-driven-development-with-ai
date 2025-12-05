@@ -1,8 +1,17 @@
 # Instalación de la Extensión MTA
 
-Este proyecto incluye scripts para descargar e instalar automáticamente la extensión Migration Toolkit for Applications (MTA) desde el repositorio [migtools/editor-extensions](https://github.com/migtools/editor-extensions).
+La extensión MTA está configurada como recomendada en `.vscode/extensions.json` y VS Code la instalará automáticamente cuando abras el workspace.
 
-## Instalación Automática
+## Instalación Automática desde Marketplace
+
+VS Code instalará automáticamente `redhat.mta-vscode-extension` desde el marketplace cuando:
+1. Abres el workspace por primera vez
+2. VS Code muestra una notificación preguntando si quieres instalar las extensiones recomendadas
+3. Aceptas instalar las extensiones recomendadas
+
+## Instalación Manual (Versión de migtools)
+
+Si necesitas específicamente la versión desde [migtools/editor-extensions](https://github.com/migtools/editor-extensions) (fork con actualizaciones), puedes usar los scripts incluidos:
 
 ### En Windows (PowerShell)
 
@@ -23,7 +32,9 @@ chmod +x install-mta-extension.sh
 
 ### En Devfile (Che/CodeReady Workspaces)
 
-La extensión se instalará automáticamente cuando se inicie el workspace gracias al comando `install-mta-extension` en el `devfile.yaml`.
+La extensión se instalará automáticamente desde el marketplace cuando VS Code detecte las extensiones recomendadas en `.vscode/extensions.json`.
+
+**Nota:** Si necesitas la versión específica de migtools en lugar de la oficial, puedes ejecutar manualmente el script `install-mta-extension.sh` después de que el workspace inicie.
 
 ## Instalación Manual
 
