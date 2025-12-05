@@ -27,7 +27,7 @@ commands:
   - id: copyconfig
     exec:
       component: tools
-      commandLine: 'mkdir -p /home/user/.continue && cp ${PROJECT_SOURCE}/continue-config.json /home/user/.continue/config.json'
+      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh"'
   - id: install-mta-extension
     exec:
       component: tools

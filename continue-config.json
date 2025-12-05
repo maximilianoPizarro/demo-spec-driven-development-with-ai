@@ -3,14 +3,17 @@
       {
         "title": "MaaS Llama-3-2-3b",
         "model": "llama-3-2-3b",
-        "apiBase": "https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1",
+        "apiBase": "${LLM_SERVER_URL}",
+        "apiKey": "${LLM_SERVER_TOKEN}",
         "provider": "openai"
-        }    
-      ],
+      }    
+    ],
     "tabAutocompleteModel": {
       "title": "MaaS Llama-3-2-3b",
       "provider": "openai",
-      "model": "llama-3-2-3b"
+      "model": "llama-3-2-3b",
+      "apiBase": "${LLM_SERVER_URL}",
+      "apiKey": "${LLM_SERVER_TOKEN}"
     },
     "allowAnonymousTelemetry": false
   }
