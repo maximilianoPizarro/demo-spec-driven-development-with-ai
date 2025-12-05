@@ -38,39 +38,21 @@ components:
     volume:
       size: 512Mi      
 commands:
-  - id: step1-generate-continue-config
+  - id: step1-copy-continue-config
     exec:
-      label: '1. Generate Continue config from secret variables'
+      label: '1. Copy Continue config from repository'
       component: tools
+      workingDir: ${PROJECT_SOURCE}
       commandLine: >
         bash -c "
         (
           set +e
-          LLM_SERVER_ID=\"\${LLM_SERVER_ID:-llama-3-2-3b}\"
-          LLM_SERVER_URL=\"\${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}\"
           mkdir -p /home/user/.continue 2>/dev/null || true
-          cat > /home/user/.continue/config.json <<EOFCONFIG
-        {
-          \"models\": [
-            {
-              \"title\": \"MaaS \${LLM_SERVER_ID}\",
-              \"model\": \"\${LLM_SERVER_ID}\",
-              \"apiBase\": \"\${LLM_SERVER_URL}\",
-              \"provider\": \"openai\"
-            }
-          ],
-          \"tabAutocompleteModel\": {
-            \"title\": \"MaaS \${LLM_SERVER_ID}\",
-            \"provider\": \"openai\",
-            \"model\": \"\${LLM_SERVER_ID}\"
-          },
-          \"allowAnonymousTelemetry\": false
-        }
-        EOFCONFIG
-          if [ -f /home/user/.continue/config.json ]; then
-            echo \"Continue config generated successfully\"
+          if [ -f continue-config.json ]; then
+            cp continue-config.json /home/user/.continue/config.json
+            echo \"Continue config copied successfully\"
           else
-            echo \"Warning: Could not generate config file, but continuing...\"
+            echo \"Warning: continue-config.json not found in repository, but continuing...\"
           fi
         ) || true
         exit 0
@@ -103,4 +85,4 @@ commands:
         '
 events:
   postStart:
-    - step1-generate-continue-config     
+    - step1-copy-continue-config     
