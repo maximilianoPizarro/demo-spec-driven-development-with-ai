@@ -15,6 +15,8 @@ components:
       volumeMounts:
         - name: config-volume
           path: /home/user/.config
+        - name: vscode-extensions-volume
+          path: /home/user/.vscode-server/extensions
       endpoints:
         - exposure: public
           name: coolstore
@@ -22,12 +24,44 @@ components:
           targetPort: 8080
   - name: config-volume 
     volume:
-      size: 512Mi      
+      size: 512Mi
+  - name: vscode-extensions-volume
+    volume:
+      size: 1Gi      
 commands:
   - id: copyconfig
     exec:
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh"'
+  - id: install-mta-extension
+    exec:
+      component: tools
+      commandLine: >
+        bash -c "
+        set -e;
+        VSIX_URL='https://github.com/migtools/editor-extensions/releases/download/v8.0.2/mta-vscode-extension-8.0.2.vsix';
+        VSIX_FILE='/tmp/mta-vscode-extension.vsix';
+        EXT_DIR='/home/user/.vscode-server/extensions';
+        mkdir -p ${EXT_DIR};
+        if ! command -v unzip >/dev/null 2>&1; then
+          if command -v yum >/dev/null 2>&1; then yum install -y unzip;
+          elif command -v dnf >/dev/null 2>&1; then dnf install -y unzip;
+          elif command -v apt-get >/dev/null 2>&1; then apt-get update && apt-get install -y unzip;
+          fi;
+        fi;
+        echo 'Descargando extensión MTA...';
+        curl -L -o ${VSIX_FILE} ${VSIX_URL} || wget -O ${VSIX_FILE} ${VSIX_URL};
+        echo 'Instalando extensión...';
+        TEMP_DIR=\$(mktemp -d);
+        unzip -q ${VSIX_FILE} -d \${TEMP_DIR};
+        EXT_ID=\$(grep -o '\"name\": \"[^\"]*\"' \${TEMP_DIR}/package.json | head -1 | cut -d'\"' -f4);
+        EXT_VERSION=\$(grep -o '\"version\": \"[^\"]*\"' \${TEMP_DIR}/package.json | head -1 | cut -d'\"' -f4);
+        TARGET_DIR=\${EXT_DIR}/\${EXT_ID}-\${EXT_VERSION};
+        if [ -d \${TARGET_DIR} ]; then rm -rf \${TARGET_DIR}; fi;
+        mv \${TEMP_DIR} \${TARGET_DIR};
+        echo \"✅ Extensión MTA instalada: \${EXT_ID}-\${EXT_VERSION}\";
+        rm -f ${VSIX_FILE};
+        "
   - id: build-coolstore
     exec:
       label: 'Build Coolstore application'
@@ -43,3 +77,4 @@ commands:
 events:
   postStart:
     - copyconfig
+    - install-mta-extension

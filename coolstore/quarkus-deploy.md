@@ -2,9 +2,9 @@
 
 ## Minikube instructions
 
-First, make sure that you have Docker and minikube installed.
+First, make sure that you have podman and minikube installed.
 
-Next, point your shell to minikube's docker daemon:
+Next, point your shell to minikube's podman daemon:
 
 ```bash
 minikube start --driver=docker

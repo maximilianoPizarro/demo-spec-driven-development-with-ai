@@ -1,6 +1,9 @@
 # VSIX extension files
 *.vsix
 
+# podman build artifacts (opcional, descomenta si no quieres trackear)
+# Dockerfile.local
+
 # VS Code
 .vscode/*
 !.vscode/settings.json

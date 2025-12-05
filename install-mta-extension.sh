@@ -46,15 +46,37 @@ if [ -f "$VSIX_PATH" ]; then
             "/home/user/.che/extensions"
         )
         
-        # Verificar si tenemos herramientas para extraer el VSIX
-        HAS_UNZIP=false
+        # Verificar e instalar herramientas para extraer el VSIX si es necesario
+        HAS_EXTRACTOR=false
+        EXTRACTOR_CMD=""
+        
         if command -v unzip &> /dev/null; then
-            HAS_UNZIP=true
+            HAS_EXTRACTOR=true
+            EXTRACTOR_CMD="unzip"
         elif command -v python3 &> /dev/null; then
-            python3 -c "import zipfile" 2>/dev/null && HAS_UNZIP=true
+            if python3 -c "import zipfile" 2>/dev/null; then
+                HAS_EXTRACTOR=true
+                EXTRACTOR_CMD="python3"
+            fi
+        elif command -v jar &> /dev/null; then
+            # jar puede extraer archivos ZIP
+            HAS_EXTRACTOR=true
+            EXTRACTOR_CMD="jar"
         fi
         
-        if [ "$HAS_UNZIP" = true ]; then
+        # Intentar instalar unzip si no hay herramienta disponible
+        if [ "$HAS_EXTRACTOR" = false ]; then
+            echo "No se encontró herramienta para extraer VSIX. Intentando instalar unzip..."
+            if command -v yum &> /dev/null; then
+                sudo yum install -y unzip 2>/dev/null && HAS_EXTRACTOR=true && EXTRACTOR_CMD="unzip"
+            elif command -v dnf &> /dev/null; then
+                sudo dnf install -y unzip 2>/dev/null && HAS_EXTRACTOR=true && EXTRACTOR_CMD="unzip"
+            elif command -v apt-get &> /dev/null; then
+                sudo apt-get update && sudo apt-get install -y unzip 2>/dev/null && HAS_EXTRACTOR=true && EXTRACTOR_CMD="unzip"
+            fi
+        fi
+        
+        if [ "$HAS_EXTRACTOR" = true ]; then
             for EXT_DIR in "${VSCODE_EXT_DIRS[@]}"; do
                 EXT_BASE_DIR=$(dirname "$EXT_DIR" 2>/dev/null || echo "$HOME")
                 if [ -d "$EXT_BASE_DIR" ] || [ -d "$HOME" ]; then
@@ -65,14 +87,19 @@ if [ -f "$VSIX_PATH" ]; then
                     TEMP_DIR=$(mktemp -d 2>/dev/null || echo "/tmp/mta-ext-$$")
                     mkdir -p "$TEMP_DIR"
                     
-                    # Intentar extraer con unzip o python
+                    # Intentar extraer con la herramienta disponible
                     EXTRACTED=false
-                    if command -v unzip &> /dev/null; then
+                    if [ "$EXTRACTOR_CMD" = "unzip" ]; then
                         if unzip -q "$VSIX_PATH" -d "$TEMP_DIR" 2>/dev/null; then
                             EXTRACTED=true
                         fi
-                    elif command -v python3 &> /dev/null; then
+                    elif [ "$EXTRACTOR_CMD" = "python3" ]; then
                         if python3 -m zipfile -e "$VSIX_PATH" "$TEMP_DIR" 2>/dev/null; then
+                            EXTRACTED=true
+                        fi
+                    elif [ "$EXTRACTOR_CMD" = "jar" ]; then
+                        # jar xf extrae archivos ZIP
+                        if (cd "$TEMP_DIR" && jar xf "$VSIX_PATH" 2>/dev/null); then
                             EXTRACTED=true
                         fi
                     fi
