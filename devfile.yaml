@@ -104,7 +104,7 @@ components:
           protocol: http
           targetPort: 8080
         - exposure: public
-          name: wildfly-mgmt
+          name: wf-mgmt
           protocol: http
           targetPort: 9990
   - name: config-volume 
