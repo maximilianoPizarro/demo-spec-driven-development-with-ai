@@ -58,8 +58,4 @@ commands:
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x deploy-k8s.sh && ./deploy-k8s.sh"'
 events:
   postStart:
-    - setup-jdk17
     - copyconfig
-    - deploy-k8s
-    - setup-keycloak-realm
-    - setup-wildfly-datasource
