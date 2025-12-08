@@ -1578,8 +1578,8 @@
     },
     {
       "id": "9faa3b08-1bd2-43f7-86c4-e4592069d1f9",
-      "alias": "podman auth",
-      "description": "Used by podman clients to authenticate against the IDP",
+      "alias": "docker auth",
+      "description": "Used by Docker clients to authenticate against the IDP",
       "providerId": "basic-flow",
       "topLevel": true,
       "builtIn": true,
@@ -1899,7 +1899,7 @@
   "directGrantFlow": "direct grant",
   "resetCredentialsFlow": "reset credentials",
   "clientAuthenticationFlow": "clients",
-  "dockerAuthenticationFlow": "podman auth",
+  "dockerAuthenticationFlow": "docker auth",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
     "cibaAuthRequestedUserHint": "login_hint",

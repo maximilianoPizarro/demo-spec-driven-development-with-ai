@@ -1,12 +1,12 @@
-# Extensión MTA - Configuración
+# MTA Extension - Configuration
 
-La extensión MTA está configurada en `.vscode/extensions.json` como recomendada y se instalará automáticamente desde el registry de extensiones del cluster de DevSpaces.
+The MTA extension is configured in `.vscode/extensions.json` as recommended and will be automatically installed from the extension registry of the DevSpaces cluster.
 
-## Configuración
+## Configuration
 
-### Extensiones Recomendadas
+### Recommended Extensions
 
-El archivo `.vscode/extensions.json` contiene:
+The `.vscode/extensions.json` file contains:
 
 ```json
 {
@@ -14,9 +14,9 @@ El archivo `.vscode/extensions.json` contiene:
 }
 ```
 
-### Configuración de la Extensión
+### Extension Settings
 
-El archivo `.vscode/settings.json` tiene la configuración de MTA con el modo de agente GenAI habilitado:
+The `.vscode/settings.json` file has MTA configuration with GenAI agent mode enabled:
 
 ```json
 {
@@ -24,26 +24,26 @@ El archivo `.vscode/settings.json` tiene la configuración de MTA con el modo de
 }
 ```
 
-## Instalación Automática
+## Automatic Installation
 
-La extensión se instalará automáticamente cuando:
+The extension will be automatically installed when:
 
-1. Abres el workspace por primera vez
-2. VS Code detecta las extensiones recomendadas en `.vscode/extensions.json`
-3. El registry de extensiones del cluster de DevSpaces descarga e instala la extensión automáticamente
+1. You open the workspace for the first time
+2. VS Code detects recommended extensions in `.vscode/extensions.json`
+3. The extension registry of the DevSpaces cluster downloads and installs the extension automatically
 
-## Verificación
+## Verification
 
-Para verificar que la extensión está instalada:
+To verify that the extension is installed:
 
-1. Abre VS Code en el workspace
-2. Ve a Extensiones (Ctrl+Shift+X o Cmd+Shift+X)
-3. Busca "Migration Toolkit for Applications" o "MTA"
-4. Deberías ver la extensión instalada
+1. Open VS Code in the workspace
+2. Go to Extensions (Ctrl+Shift+X or Cmd+Shift+X)
+3. Search for "Migration Toolkit for Applications" or "MTA"
+4. You should see the extension installed
 
-## Notas
+## Notes
 
-- La extensión se descarga automáticamente desde el registry configurado en el cluster de DevSpaces
-- No se requieren scripts ni instalación manual
-- La configuración está lista para usar con el modo GenAI habilitado
+- The extension is automatically downloaded from the registry configured in the DevSpaces cluster
+- No scripts or manual installation required
+- Configuration is ready to use with GenAI mode enabled
 

@@ -1,6 +1,6 @@
 package com.redhat.coolstore.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity

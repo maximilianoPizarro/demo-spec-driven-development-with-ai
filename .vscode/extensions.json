@@ -1,3 +1,9 @@
 {
-  "recommendations": ["Continue.continue", "redhat.mta-vscode-extension"]
+  "recommendations": [
+    "Continue.continue",
+    "redhat.mta-vscode-extension",
+    "vscjava.vscode-java-pack",
+    "konveyor.vscode-mta",
+    "redhat.vscode-server-connector"
+  ]
 }

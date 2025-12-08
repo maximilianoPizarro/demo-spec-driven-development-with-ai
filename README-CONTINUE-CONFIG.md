@@ -1,18 +1,18 @@
-# Configuración de Continue con Autenticación
+# Continue Configuration with Authentication
 
-Este proyecto está configurado para usar Continue con el modelo MaaS Llama-3-2-3b. Para que funcione correctamente, necesitas configurar las credenciales de autenticación.
+This project is configured to use Continue with the MaaS Llama-3-2-3b model. To work correctly, you need to configure authentication credentials.
 
 ## Error 403: Authentication failed
 
-Si ves el error "403 Authentication failed" al usar Continue, significa que falta configurar el token de autenticación.
+If you see the "403 Authentication failed" error when using Continue, it means the authentication token is missing.
 
-## Solución: Configurar el Secret de Kubernetes
+## Solution: Configure Kubernetes Secret
 
-El workspace está configurado para leer las credenciales desde un Secret de Kubernetes llamado `openapi-api-key`.
+The workspace is configured to read credentials from a Kubernetes Secret named `openapi-api-key`.
 
-### 1. Crear o actualizar el Secret
+### 1. Create or Update the Secret
 
-Asegúrate de que el secret `openapi-api-key` tenga las siguientes variables configuradas:
+Make sure the `openapi-api-key` secret has the following variables configured:
 
 ```yaml
 kind: Secret
@@ -25,28 +25,28 @@ metadata:
   annotations:
     controller.devfile.io/mount-as: env
 stringData:
-  LLM_SERVER_TOKEN: "tu-token-aqui"
+  LLM_SERVER_TOKEN: "your-token-here"
   LLM_SERVER_URL: "https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1"
 type: Opaque
 ```
 
-### 2. Variables de entorno requeridas
+### 2. Required Environment Variables
 
-- **`LLM_SERVER_TOKEN`**: Token de autenticación para el modelo LLM (requerido)
-- **`LLM_SERVER_URL`**: URL base del API (opcional, tiene un valor por defecto)
-- **`OPENAI_API_KEY`**: Alternativa a `LLM_SERVER_TOKEN` si no está disponible
+- **`LLM_SERVER_TOKEN`**: Authentication token for the LLM model (required)
+- **`LLM_SERVER_URL`**: API base URL (optional, has a default value)
+- **`OPENAI_API_KEY`**: Alternative to `LLM_SERVER_TOKEN` if not available
 
-### 3. Aplicar el Secret
+### 3. Apply the Secret
 
 ```bash
 oc apply -f secret.yaml
 ```
 
-O crea el secret manualmente:
+Or create the secret manually:
 
 ```bash
 oc create secret generic openapi-api-key \
-  --from-literal=LLM_SERVER_TOKEN="tu-token" \
+  --from-literal=LLM_SERVER_TOKEN="your-token" \
   --from-literal=LLM_SERVER_URL="https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1" \
   --dry-run=client -o yaml | \
   oc label -f - \
@@ -59,34 +59,33 @@ oc create secret generic openapi-api-key \
   oc apply -f -
 ```
 
-### 4. Reiniciar el workspace
+### 4. Restart the Workspace
 
-Después de crear o actualizar el secret, reinicia el workspace para que las variables de entorno se carguen:
+After creating or updating the secret, restart the workspace so environment variables are loaded:
 
-1. Detén el workspace actual
-2. Inicia un nuevo workspace desde el devfile
+1. Stop the current workspace
+2. Start a new workspace from the devfile
 
-El script `setup-continue-config.sh` se ejecutará automáticamente al iniciar y configurará Continue con las credenciales correctas.
+The `setup-continue-config.sh` script will run automatically on startup and configure Continue with the correct credentials.
 
-## Verificación
+## Verification
 
-Para verificar que la configuración es correcta:
+To verify that the configuration is correct:
 
-1. Abre VS Code en el workspace
-2. Abre Continue (Ctrl+Shift+P > "Continue")
-3. Intenta hacer una pregunta al modelo
-4. Si funciona, verás la respuesta del modelo. Si ves un error 403, verifica que el secret esté configurado correctamente.
+1. Open VS Code in the workspace
+2. Open Continue (Ctrl+Shift+P > "Continue")
+3. Try asking the model a question
+4. If it works, you'll see the model's response. If you see a 403 error, verify that the secret is configured correctly.
 
-## Estructura de archivos
+## File Structure
 
-- `continue-config.json`: Template con placeholders para variables de entorno
-- `setup-continue-config.sh`: Script que procesa el template y crea la configuración final en `/home/user/.continue/config.json`
-- `devfile.yaml`: Configuración del workspace que ejecuta el script al iniciar
-- `secret.yaml`: Template del secret de Kubernetes (actualiza con tus credenciales reales)
+- `continue-config.json`: Template with placeholders for environment variables
+- `setup-continue-config.sh`: Script that processes the template and creates the final configuration in `/home/user/.continue/config.json`
+- `devfile.yaml`: Workspace configuration that runs the script on startup
+- `secret.yaml`: Kubernetes secret template (update with your real credentials)
 
-## Notas
+## Notes
 
-- El token nunca debe estar en el código fuente. Siempre usa secrets de Kubernetes.
-- El archivo `continue-config.json` en el repositorio contiene placeholders, no credenciales reales.
-- La configuración final se genera en `/home/user/.continue/config.json` cuando se inicia el workspace.
-
+- The token should never be in source code. Always use Kubernetes secrets.
+- The `continue-config.json` file in the repository contains placeholders, not real credentials.
+- The final configuration is generated in `/home/user/.continue/config.json` when the workspace starts.

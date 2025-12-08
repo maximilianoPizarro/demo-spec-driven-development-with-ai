@@ -1,18 +1,19 @@
 package com.redhat.coolstore.service;
 
+import java.util.Hashtable;
 import java.util.logging.Logger;
 
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-
-import org.eclipse.microprofile.rest.client.inject.RestClient;
+import javax.ejb.Stateful;
+import javax.inject.Inject;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import com.redhat.coolstore.model.Product;
 import com.redhat.coolstore.model.ShoppingCart;
 import com.redhat.coolstore.model.ShoppingCartItem;
-import com.redhat.coolstore.rest.client.ShippingServiceClient;
 
-@SessionScoped
+@Stateful
 public class ShoppingCartService  {
 
     @Inject
@@ -24,8 +25,6 @@ public class ShoppingCartService  {
     @Inject
     PromoService ps;
 
-    @RestClient
-    ShippingServiceClient ss;
 
     @Inject
     ShoppingCartOrderProcessor shoppingCartOrderProcessor;
@@ -70,11 +69,11 @@ public class ShoppingCartService  {
 
                 }
 
-                sc.setShippingTotal(ss.calculateShipping(sc));
+                sc.setShippingTotal(lookupShippingServiceRemote().calculateShipping(sc));
 
                 if (sc.getCartItemTotal() >= 25) {
                     sc.setShippingTotal(sc.getShippingTotal()
-                            + ss.calculateShippingInsurance(sc));
+                            + lookupShippingServiceRemote().calculateShippingInsurance(sc));
                 }
 
             }
@@ -110,5 +109,18 @@ public class ShoppingCartService  {
 
     public Product getProduct(String itemId) {
         return productServices.getProductByItemId(itemId);
+    }
+
+	private static ShippingServiceRemote lookupShippingServiceRemote() {
+        try {
+            final Hashtable<String, String> jndiProperties = new Hashtable<>();
+            jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "org.wildfly.naming.client.WildFlyInitialContextFactory");
+
+            final Context context = new InitialContext(jndiProperties);
+
+            return (ShippingServiceRemote) context.lookup("ejb:/ROOT/ShippingService!" + ShippingServiceRemote.class.getName());
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
