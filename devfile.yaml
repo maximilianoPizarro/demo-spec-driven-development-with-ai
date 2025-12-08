@@ -15,11 +15,6 @@ components:
       volumeMounts:
         - name: config-volume
           path: /home/user/.config
-      endpoints:
-        - exposure: public
-          name: coolstore
-          protocol: http
-          targetPort: 8080
   - name: postgres
     container:
       image: postgres:15
