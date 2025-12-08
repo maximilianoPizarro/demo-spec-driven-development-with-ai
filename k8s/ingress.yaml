@@ -1,0 +1,31 @@
+# Kubernetes Ingress (for non-OpenShift clusters)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: coolstore-ingress
+  namespace: coolstore
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: coolstore.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wildfly
+            port:
+              number: 8080
+  - host: keycloak.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: keycloak
+            port:
+              number: 8081
+

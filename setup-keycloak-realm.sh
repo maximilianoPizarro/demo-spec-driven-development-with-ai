@@ -1,5 +1,20 @@
 #!/bin/bash
 # Script to import Keycloak realm from realm-export.json
+# Supports both local containers and Kubernetes/OpenShift deployments
+
+# Try to detect Keycloak URL from Kubernetes/OpenShift if available
+if command -v oc &> /dev/null && oc get route keycloak -n coolstore &> /dev/null; then
+    KEYCLOAK_HOST=$(oc get route keycloak -n coolstore -o jsonpath='{.spec.host}' 2>/dev/null)
+    if [ -n "$KEYCLOAK_HOST" ]; then
+        KEYCLOAK_URL="http://${KEYCLOAK_HOST}"
+        echo "Detected OpenShift route for Keycloak: ${KEYCLOAK_URL}"
+    fi
+elif command -v kubectl &> /dev/null && kubectl get svc keycloak -n coolstore &> /dev/null; then
+    # Try to use port-forward or service URL
+    KEYCLOAK_URL="${KEYCLOAK_URL:-http://keycloak.coolstore.svc.cluster.local:8081}"
+    echo "Using Kubernetes service URL: ${KEYCLOAK_URL}"
+    echo "Note: You may need to set up port-forwarding: kubectl port-forward svc/keycloak 8081:8081 -n coolstore"
+fi
 
 KEYCLOAK_URL="${KEYCLOAK_URL:-http://keycloak:8081}"
 REALM_FILE="${PROJECT_SOURCE}/coolstore/realm-export.json"

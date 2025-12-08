@@ -1,0 +1,56 @@
+# OpenShift Route for WildFly
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: wildfly
+  namespace: coolstore
+  labels:
+    app: wildfly
+spec:
+  to:
+    kind: Service
+    name: wildfly
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+---
+# OpenShift Route for Keycloak
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: keycloak
+  namespace: coolstore
+  labels:
+    app: keycloak
+spec:
+  to:
+    kind: Service
+    name: keycloak
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+---
+# OpenShift Route for WildFly Management Console
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: wildfly-mgmt
+  namespace: coolstore
+  labels:
+    app: wildfly
+spec:
+  to:
+    kind: Service
+    name: wildfly
+  port:
+    targetPort: management
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+

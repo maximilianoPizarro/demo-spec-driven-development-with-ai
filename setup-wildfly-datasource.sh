@@ -1,8 +1,29 @@
 #!/bin/bash
 # Script to configure WildFly with PostgreSQL datasource
+# Supports both local containers and Kubernetes/OpenShift deployments
+
+# Try to detect service URLs from Kubernetes/OpenShift if available
+if command -v oc &> /dev/null && oc get route wildfly-mgmt -n coolstore &> /dev/null; then
+    WILDFLY_HOST=$(oc get route wildfly-mgmt -n coolstore -o jsonpath='{.spec.host}' 2>/dev/null)
+    if [ -n "$WILDFLY_HOST" ]; then
+        WILDFLY_PORT="80"
+        echo "Detected OpenShift route for WildFly management: ${WILDFLY_HOST}"
+    fi
+elif command -v kubectl &> /dev/null && kubectl get svc wildfly -n coolstore &> /dev/null; then
+    WILDFLY_HOST="${WILDFLY_HOST:-wildfly.coolstore.svc.cluster.local}"
+    echo "Using Kubernetes service URL: ${WILDFLY_HOST}"
+    echo "Note: You may need to set up port-forwarding: kubectl port-forward svc/wildfly 9990:9990 -n coolstore"
+fi
 
 WILDFLY_HOST="${WILDFLY_HOST:-wildfly}"
 WILDFLY_PORT="${WILDFLY_PORT:-9990}"
+
+# Try to detect PostgreSQL service URL from Kubernetes
+if command -v kubectl &> /dev/null && kubectl get svc postgres -n coolstore &> /dev/null; then
+    POSTGRES_HOST="${POSTGRES_HOST:-postgres.coolstore.svc.cluster.local}"
+    echo "Using Kubernetes PostgreSQL service: ${POSTGRES_HOST}"
+fi
+
 POSTGRES_HOST="${POSTGRES_HOST:-postgres}"
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
 POSTGRES_DB="${POSTGRES_DB:-postgresDB}"

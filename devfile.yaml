@@ -15,102 +15,9 @@ components:
       volumeMounts:
         - name: config-volume
           path: /home/user/.config
-  - name: postgres
-    container:
-      image: postgres:15
-      memoryLimit: 1Gi
-      memoryRequest: 512Mi
-      env:
-        - name: POSTGRES_USER
-          value: postgresUser
-        - name: POSTGRES_PASSWORD
-          value: postgresPW
-        - name: POSTGRES_DB
-          value: postgresDB
-        - name: POSTGRES_MULTIPLE_DATABASES
-          value: keycloak
-      volumeMounts:
-        - name: postgres-data
-          path: /var/lib/postgresql/data
-      endpoints:
-        - exposure: public
-          name: postgres
-          protocol: tcp
-          targetPort: 5432
-  - name: keycloak
-    container:
-      image: quay.io/keycloak/keycloak:20.0.5
-      memoryLimit: 2Gi
-      memoryRequest: 1Gi
-      env:
-        - name: KEYCLOAK_ADMIN
-          value: admin
-        - name: KEYCLOAK_ADMIN_PASSWORD
-          value: admin
-        - name: KC_DB
-          value: postgres
-        - name: KC_DB_URL_HOST
-          value: postgres
-        - name: KC_DB_URL_PORT
-          value: "5432"
-        - name: KC_DB_URL_DATABASE
-          value: keycloak
-        - name: KC_DB_USERNAME
-          value: postgresUser
-        - name: KC_DB_PASSWORD
-          value: postgresPW
-        - name: KC_HTTP_PORT
-          value: "8081"
-        - name: KC_HOSTNAME_STRICT
-          value: "false"
-        - name: KC_HOSTNAME_STRICT_HTTPS
-          value: "false"
-        - name: KEYCLOAK_URL
-          value: http://keycloak:8081
-      volumeMounts:
-        - name: keycloak-data
-          path: /opt/keycloak/data
-      endpoints:
-        - exposure: public
-          name: keycloak
-          protocol: http
-          targetPort: 8081
-  - name: wildfly
-    container:
-      image: quay.io/wildfly/wildfly:27.0.1.Final-jdk17
-      memoryLimit: 2Gi
-      memoryRequest: 1Gi
-      env:
-        - name: POSTGRES_HOST
-          value: postgres
-        - name: POSTGRES_PORT
-          value: "5432"
-        - name: POSTGRES_DB
-          value: postgresDB
-        - name: POSTGRES_USER
-          value: postgresUser
-        - name: POSTGRES_PASSWORD
-          value: postgresPW
-        - name: KEYCLOAK_URL
-          value: http://keycloak:8081
-      endpoints:
-        - exposure: public
-          name: wildfly
-          protocol: http
-          targetPort: 8080
-        - exposure: public
-          name: wf-mgmt
-          protocol: http
-          targetPort: 9990
   - name: config-volume 
     volume:
-      size: 512Mi
-  - name: postgres-data
-    volume:
-      size: 1Gi
-  - name: keycloak-data
-    volume:
-      size: 1Gi      
+      size: 512Mi      
 commands:
   - id: setup-jdk17
     exec:
@@ -144,9 +51,15 @@ commands:
       component: tools
       workingDir: ${PROJECT_SOURCE}/coolstore
       commandLine: 'mvn quarkus:dev'
+  - id: deploy-k8s
+    exec:
+      label: '7. Deploy to Kubernetes/OpenShift'
+      component: tools
+      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x deploy-k8s.sh && ./deploy-k8s.sh"'
 events:
   postStart:
     - setup-jdk17
     - copyconfig
+    - deploy-k8s
     - setup-keycloak-realm
     - setup-wildfly-datasource
