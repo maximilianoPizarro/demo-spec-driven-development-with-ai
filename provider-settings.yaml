@@ -22,6 +22,7 @@ models:
     args:
       model: "${LLM_SERVER_ID}"
       baseURL: "${LLM_SERVER_URL}"
+      apiKey: "${LLM_SERVER_TOKEN}"
 
   OpenAI:
     environment:
