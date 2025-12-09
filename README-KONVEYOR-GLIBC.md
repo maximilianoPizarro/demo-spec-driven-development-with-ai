@@ -86,6 +86,16 @@ javascript-external-provider crashed with code 1
 ## Current Configuration
 
 The devfile is currently configured to use:
-- **Image**: `quay.io/devfile/universal-developer-image:ubi9-latest`
-- **Expected GLIBC**: 2.34+ (should be compatible with Konveyor providers)
+- **Image**: `quay.io/devfile/universal-developer-image:latest`
+- **Expected GLIBC**: Should be 2.34+ (compatible with Konveyor providers)
+
+## Important: Restart Required
+
+**After changing the image in devfile.yaml, you MUST restart your workspace** for the changes to take effect:
+
+1. Stop the current workspace
+2. Delete the workspace (or wait for it to be recreated)
+3. Start a new workspace from the updated devfile
+
+The workspace will continue using the old image until it's restarted.
 

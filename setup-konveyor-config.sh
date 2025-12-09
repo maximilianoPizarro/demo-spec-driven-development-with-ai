@@ -24,7 +24,11 @@ done
 if [ -f "${SOURCE_CONFIG}" ]; then
     # Use LLM_SERVER_TOKEN or OPENAI_API_KEY as fallback
     API_TOKEN="${LLM_SERVER_TOKEN:-${OPENAI_API_KEY}}"
-    API_BASE="${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}"
+    API_BASE="${LLM_SERVER_URL:-${OPENAI_API_BASE:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}}"
+    MODEL_ID="${LLM_SERVER_ID:-llama-3-2-3b}"
+    RA_PROVIDER="${RA_AID_PROVIDER:-openai}"
+    RA_MODEL="${RA_AID_MODEL:-llama-3-2-3b}"
+    RA_BACKEND="${RA_AID_BACKEND:-openai}"
     
     # Debug: Show what we're working with
     echo "Debug: API_TOKEN length: ${#API_TOKEN}"
@@ -39,15 +43,24 @@ if [ -f "${SOURCE_CONFIG}" ]; then
     # Escape special characters for sed (both URL and token)
     ESCAPED_API_BASE=$(echo "${API_BASE}" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's|/|\\/|g')
     ESCAPED_API_TOKEN=$(echo "${API_TOKEN}" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's|/|\\/|g' | sed 's|&|\\&|g')
+    ESCAPED_MODEL_ID=$(echo "${MODEL_ID}" | sed 's/[[\.*^$()+?{|]/\\&/g')
+    ESCAPED_RA_PROVIDER=$(echo "${RA_PROVIDER}" | sed 's/[[\.*^$()+?{|]/\\&/g')
+    ESCAPED_RA_MODEL=$(echo "${RA_MODEL}" | sed 's/[[\.*^$()+?{|]/\\&/g')
+    ESCAPED_RA_BACKEND=$(echo "${RA_BACKEND}" | sed 's/[[\.*^$()+?{|]/\\&/g')
     
     # Replace environment variable placeholders with actual values
     # Use a temporary file to avoid issues with sed and special characters
     TEMP_FILE=$(mktemp)
     
-    # First replace URL, then token (order matters)
+    # Replace all variables in order (URL first, then token, then others)
     sed "s|\${LLM_SERVER_URL}|${ESCAPED_API_BASE}|g" \
         "${SOURCE_CONFIG}" | \
-    sed "s|\${LLM_SERVER_TOKEN}|${ESCAPED_API_TOKEN}|g" > "${TEMP_FILE}"
+    sed "s|\${OPENAI_API_BASE}|${ESCAPED_API_BASE}|g" | \
+    sed "s|\${LLM_SERVER_TOKEN}|${ESCAPED_API_TOKEN}|g" | \
+    sed "s|\${LLM_SERVER_ID}|${ESCAPED_MODEL_ID}|g" | \
+    sed "s|\${RA_AID_PROVIDER}|${ESCAPED_RA_PROVIDER}|g" | \
+    sed "s|\${RA_AID_MODEL}|${ESCAPED_RA_MODEL}|g" | \
+    sed "s|\${RA_AID_BACKEND}|${ESCAPED_RA_BACKEND}|g" > "${TEMP_FILE}"
     
     # Verify replacements were made
     if grep -q '\${LLM_SERVER_TOKEN}' "${TEMP_FILE}"; then
@@ -57,6 +70,14 @@ if [ -f "${SOURCE_CONFIG}" ]; then
     
     if grep -q '\${LLM_SERVER_URL}' "${TEMP_FILE}"; then
         echo "WARNING: Some \${LLM_SERVER_URL} placeholders were not replaced"
+    fi
+    
+    if grep -q '\${LLM_SERVER_ID}' "${TEMP_FILE}"; then
+        echo "WARNING: Some \${LLM_SERVER_ID} placeholders were not replaced"
+    fi
+    
+    if grep -q '\${OPENAI_API_BASE}' "${TEMP_FILE}"; then
+        echo "WARNING: Some \${OPENAI_API_BASE} placeholders were not replaced"
     fi
     
     # Validate YAML syntax before copying
