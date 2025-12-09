@@ -6,7 +6,7 @@ attributes:
 components:
   - name: tools
     container:
-      image: quay.io/devfile/universal-developer-image:ubi8-latest
+      image: quay.io/devfile/universal-developer-image:ubi9-latest
       memoryLimit: 4Gi
       memoryRequest: 2Gi
       cpuRequest: 1000m
@@ -26,9 +26,9 @@ commands:
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-jdk17.sh && ./setup-jdk17.sh"'
   - id: copyconfig
     exec:
-      label: '2. Configure Continue AI'
+      label: '2. Configure Continue AI and Konveyor'
       component: tools
-      commandLine: 'bash -c "if [ -f ${PROJECT_SOURCE}/setup-continue-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh; else echo \"Warning: setup-continue-config.sh not found, skipping Continue config\"; fi"'
+      commandLine: 'bash -c "if [ -f ${PROJECT_SOURCE}/setup-continue-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh; else echo \"Warning: setup-continue-config.sh not found, skipping Continue config\"; fi; if [ -f ${PROJECT_SOURCE}/setup-konveyor-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-konveyor-config.sh && ./setup-konveyor-config.sh; else echo \"Warning: setup-konveyor-config.sh not found, skipping Konveyor config\"; fi"'
   - id: setup-keycloak-realm
     exec:
       label: '3. Setup Keycloak Realm'

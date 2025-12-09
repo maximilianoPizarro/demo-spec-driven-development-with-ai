@@ -4,6 +4,8 @@
     "redhat.mta-vscode-extension",
     "vscjava.vscode-java-pack",
     "konveyor.vscode-mta",
+    "konveyor.konveyor",
+    "konveyor.konveyor-java",
     "redhat.vscode-server-connector"
   ]
 }
