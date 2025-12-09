@@ -6,7 +6,7 @@ echo "Konveyor Configuration Diagnostics"
 echo "=========================================="
 
 # VS Code Server (checode) global storage location (primary)
-VSCODE_CONFIG="${HOME}/checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml"
+VSCODE_CONFIG="${HOME}/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml"
 # Fallback location
 KONVEYOR_CONFIG="${HOME}/.konveyor/provider-settings.yaml"
 
