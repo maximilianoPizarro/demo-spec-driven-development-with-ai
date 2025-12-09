@@ -5,14 +5,6 @@ environment:
   ALWAYS_APPLIED_KEY: "envvar to be set regardless of which model is active"
   OPENAI_API_BASE: "${LLM_SERVER_URL}"
   OPENAI_API_KEY: "${LLM_SERVER_TOKEN}"
-  LLM_SERVER_TOKEN: "${LLM_SERVER_TOKEN}"
-  LLM_SERVER_URL: "${LLM_SERVER_URL}"
-  LLM_SERVER_ID: "${LLM_SERVER_ID}"
-  RA_AID_MODEL: "${RA_AID_MODEL}"
-  RA_AID_BACKEND: "${RA_AID_BACKEND}"
-  RA_AID_PROVIDER: "${RA_AID_PROVIDER}"
-  DEVSPACES_API_KEY: "devspaces"
-  MCP_HEADERS: '{"backstage-actions": {"Authorization": "Bearer backstage"}}'
 
 models:
   MaaSLlama: &active
@@ -21,8 +13,8 @@ models:
     provider: ChatOpenAI
     args:
       model: "${LLM_SERVER_ID}"
-      base_url: "${LLM_SERVER_URL}"
-      api_key: "${LLM_SERVER_TOKEN}"
+      configuration:
+        baseURL: "https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1"
 
   OpenAI:
     environment:
