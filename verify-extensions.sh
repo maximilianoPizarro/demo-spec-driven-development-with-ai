@@ -6,7 +6,11 @@ echo "VS Code Extensions Verification"
 echo "=========================================="
 
 # VS Code Server extensions directory
-VSCODE_EXTENSIONS_DIR="${HOME}/.checode/remote/extensions"
+VSCODE_EXTENSIONS_DIR="${HOME}/checode/remote/extensions"
+if [ ! -d "${VSCODE_EXTENSIONS_DIR}" ]; then
+    VSCODE_EXTENSIONS_DIR="${HOME}/.checode/remote/extensions"
+fi
+
 if [ ! -d "${VSCODE_EXTENSIONS_DIR}" ]; then
     VSCODE_EXTENSIONS_DIR="${HOME}/.vscode-server/extensions"
 fi
