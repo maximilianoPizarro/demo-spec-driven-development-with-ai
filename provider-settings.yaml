@@ -21,8 +21,8 @@ models:
     provider: ChatOpenAI
     args:
       model: "${LLM_SERVER_ID}"
-      baseURL: "${LLM_SERVER_URL}"
-      apiKey: "${LLM_SERVER_TOKEN}"
+      base_url: "${LLM_SERVER_URL}"
+      api_key: "${LLM_SERVER_TOKEN}"
 
   OpenAI:
     environment:
