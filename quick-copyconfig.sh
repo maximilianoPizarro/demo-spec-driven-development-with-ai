@@ -1,34 +1,24 @@
 #!/bin/bash
-# Quick configuration script - fast setup for Continue and Konveyor
-# This version doesn't wait long for environment variables
+# Ultra-fast configuration script - Continue only, no waits, no timeouts
+# Runs in background to avoid blocking workspace startup
 
-echo "Quick configuration setup..."
+CONTINUE_DIR="/home/user/.continue"
+SOURCE_CONFIG="${PROJECT_SOURCE}/continue-config.json"
+TARGET_CONFIG="${CONTINUE_DIR}/config.json"
 
-# Continue config (fast, no waiting)
-if [ -f "${PROJECT_SOURCE}/setup-continue-config.sh" ]; then
-    echo "Configuring Continue AI..."
-    cd "${PROJECT_SOURCE}"
-    chmod +x setup-continue-config.sh
-    ./setup-continue-config.sh
-else
-    echo "Warning: setup-continue-config.sh not found, skipping Continue config"
-fi
-
-# Konveyor config (with minimal wait)
-if [ -f "${PROJECT_SOURCE}/setup-konveyor-config.sh" ]; then
-    echo "Configuring Konveyor..."
-    cd "${PROJECT_SOURCE}"
-    chmod +x setup-konveyor-config.sh
+# Continue config - instant, no waiting, no timeouts
+if [ -f "${SOURCE_CONFIG}" ]; then
+    mkdir -p "${CONTINUE_DIR}" 2>/dev/null || true
     
-    # Check if env vars are available immediately, if not skip (will be configured later)
-    if [ -n "${LLM_SERVER_TOKEN}" ] || [ -n "${OPENAI_API_KEY}" ]; then
-        ./setup-konveyor-config.sh
-    else
-        echo "Environment variables not yet available, Konveyor config will be set up when you run '3. Configure Continue AI and Konveyor' command"
-    fi
-else
-    echo "Warning: setup-konveyor-config.sh not found, skipping Konveyor config"
+    # Use environment variables if available, otherwise use defaults
+    API_TOKEN="${LLM_SERVER_TOKEN:-${OPENAI_API_KEY}}"
+    API_BASE="${LLM_SERVER_URL:-https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1}"
+    
+    # Quick replace - instant operation
+    sed "s|\${LLM_SERVER_URL}|${API_BASE}|g" "${SOURCE_CONFIG}" 2>/dev/null | \
+    sed "s|\${LLM_SERVER_TOKEN}|${API_TOKEN}|g" 2>/dev/null > "${TARGET_CONFIG}" 2>/dev/null || true
 fi
 
-echo "Quick configuration complete!"
+# Exit immediately - Konveyor will be configured manually if needed
+exit 0
 
