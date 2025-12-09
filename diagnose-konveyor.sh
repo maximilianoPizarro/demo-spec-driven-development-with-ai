@@ -5,7 +5,18 @@ echo "=========================================="
 echo "Konveyor Configuration Diagnostics"
 echo "=========================================="
 
+# VS Code Server (checode) global storage location (primary)
+VSCODE_CONFIG="${HOME}/.checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml"
+# Fallback location
 KONVEYOR_CONFIG="${HOME}/.konveyor/provider-settings.yaml"
+
+# Use VS Code location if it exists, otherwise fallback
+if [ -f "${VSCODE_CONFIG}" ]; then
+    KONVEYOR_CONFIG="${VSCODE_CONFIG}"
+    echo "Using VS Code Server location: ${VSCODE_CONFIG}"
+else
+    echo "Using fallback location: ${KONVEYOR_CONFIG}"
+fi
 
 echo ""
 echo "1. Environment Variables:"

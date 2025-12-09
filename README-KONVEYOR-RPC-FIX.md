@@ -40,14 +40,21 @@ This will:
 Check that the processed configuration exists and is valid:
 
 ```bash
-# Check if config file exists
+# Check VS Code Server location (primary)
+ls -la ~/.checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml
+
+# Or check fallback location
 ls -la ~/.konveyor/provider-settings.yaml
 
 # Validate YAML syntax
-python3 -c "import yaml; yaml.safe_load(open('${HOME}/.konveyor/provider-settings.yaml'))"
+CONFIG_FILE="${HOME}/.checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml"
+if [ ! -f "${CONFIG_FILE}" ]; then
+    CONFIG_FILE="${HOME}/.konveyor/provider-settings.yaml"
+fi
+python3 -c "import yaml; yaml.safe_load(open('${CONFIG_FILE}'))"
 
 # Check for unexpanded variables
-grep -n '\${' ~/.konveyor/provider-settings.yaml
+grep -n '\${' "${CONFIG_FILE}"
 ```
 
 If you see unexpanded variables (like `${LLM_SERVER_TOKEN}`), the script didn't run or environment variables weren't available.
@@ -107,6 +114,10 @@ Instead of:
 
 3. **Manually verify config file:**
    ```bash
+   # Check VS Code Server location (primary)
+   cat ~/.checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml
+   
+   # Or check fallback location
    cat ~/.konveyor/provider-settings.yaml
    ```
    
@@ -142,7 +153,10 @@ To avoid this issue in the future:
 ## Current Configuration
 
 - **Source config**: `${PROJECT_SOURCE}/provider-settings.yaml` (uses placeholders)
-- **Target config**: `~/.konveyor/provider-settings.yaml` (processed with actual values)
+- **Target config (VS Code Server)**: `~/.checode/remote/data/User/globalStorage/konveyor.konveyor/provider-settings.yaml` (primary location)
+- **Target config (fallback)**: `~/.konveyor/provider-settings.yaml` (for compatibility)
 - **Setup script**: `${PROJECT_SOURCE}/setup-konveyor-config.sh`
 - **Diagnostics**: `${PROJECT_SOURCE}/diagnose-konveyor.sh`
+
+**Note:** The Konveyor extension reads the configuration from VS Code Server's global storage directory. The setup script copies the processed configuration to both locations for compatibility.
 

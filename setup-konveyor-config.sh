@@ -1,10 +1,20 @@
 #!/bin/bash
 # Script to configure provider-settings.yaml with environment variables for Konveyor
 
-KONVEYOR_CONFIG_DIR="${HOME}/.konveyor"
 SOURCE_CONFIG="${PROJECT_SOURCE}/provider-settings.yaml"
-TARGET_CONFIG="${KONVEYOR_CONFIG_DIR}/provider-settings.yaml"
 
+# VS Code Server (checode) global storage location
+# This is where Konveyor extension actually reads the config from
+VSCODE_GLOBAL_STORAGE="${HOME}/.checode/remote/data/User/globalStorage/konveyor.konveyor"
+VSCODE_CONFIG_DIR="${VSCODE_GLOBAL_STORAGE}"
+VSCODE_TARGET_CONFIG="${VSCODE_CONFIG_DIR}/provider-settings.yaml"
+
+# Fallback location (for compatibility)
+KONVEYOR_CONFIG_DIR="${HOME}/.konveyor"
+KONVEYOR_TARGET_CONFIG="${KONVEYOR_CONFIG_DIR}/provider-settings.yaml"
+
+# Create both directories
+mkdir -p "${VSCODE_CONFIG_DIR}"
 mkdir -p "${KONVEYOR_CONFIG_DIR}"
 
 # Wait for environment variables to be available (up to 30 seconds)
@@ -83,30 +93,36 @@ if [ -f "${SOURCE_CONFIG}" ]; then
     # Validate YAML syntax before copying
     if command -v python3 &> /dev/null; then
         python3 -c "import yaml; yaml.safe_load(open('${TEMP_FILE}'))" 2>/dev/null
-        if [ $? -eq 0 ]; then
-            mv "${TEMP_FILE}" "${TARGET_CONFIG}"
-        else
+        if [ $? -ne 0 ]; then
             echo "WARNING: Generated YAML may have syntax issues, but copying anyway"
-            mv "${TEMP_FILE}" "${TARGET_CONFIG}"
         fi
-    else
-        mv "${TEMP_FILE}" "${TARGET_CONFIG}"
     fi
     
+    # Copy to VS Code Server global storage (primary location)
+    cp "${TEMP_FILE}" "${VSCODE_TARGET_CONFIG}"
+    
+    # Also copy to fallback location for compatibility
+    cp "${TEMP_FILE}" "${KONVEYOR_TARGET_CONFIG}"
+    
+    # Clean up temp file
+    rm "${TEMP_FILE}"
+    
     # Verify the file was created and has content
-    if [ ! -f "${TARGET_CONFIG}" ] || [ ! -s "${TARGET_CONFIG}" ]; then
-        echo "ERROR: Failed to create Konveyor config file"
+    if [ ! -f "${VSCODE_TARGET_CONFIG}" ] || [ ! -s "${VSCODE_TARGET_CONFIG}" ]; then
+        echo "ERROR: Failed to create Konveyor config file at VS Code location"
         exit 1
     fi
     
-    echo "Konveyor config created at: ${TARGET_CONFIG}"
+    echo "Konveyor config created at:"
+    echo "  Primary: ${VSCODE_TARGET_CONFIG}"
+    echo "  Fallback: ${KONVEYOR_TARGET_CONFIG}"
     echo "API Base: ${API_BASE}"
     echo "Token configured (length: ${#API_TOKEN} characters)"
     
     # Final verification: check that values were actually replaced
     echo ""
     echo "Verifying replacements in config file:"
-    if grep -q "${API_BASE}" "${TARGET_CONFIG}" 2>/dev/null; then
+    if grep -q "${API_BASE}" "${VSCODE_TARGET_CONFIG}" 2>/dev/null; then
         echo "  ✓ API Base URL replaced successfully"
     else
         echo "  ✗ WARNING: API Base URL may not have been replaced correctly"
@@ -114,7 +130,7 @@ if [ -f "${SOURCE_CONFIG}" ]; then
     
     # Check token (first 10 chars only for security)
     TOKEN_PREFIX=$(echo "${API_TOKEN}" | cut -c1-10)
-    if grep -q "${TOKEN_PREFIX}" "${TARGET_CONFIG}" 2>/dev/null || ! grep -q '\${LLM_SERVER_TOKEN}' "${TARGET_CONFIG}"; then
+    if grep -q "${TOKEN_PREFIX}" "${VSCODE_TARGET_CONFIG}" 2>/dev/null || ! grep -q '\${LLM_SERVER_TOKEN}' "${VSCODE_TARGET_CONFIG}"; then
         echo "  ✓ API Token replaced successfully"
     else
         echo "  ✗ WARNING: API Token may not have been replaced correctly"
