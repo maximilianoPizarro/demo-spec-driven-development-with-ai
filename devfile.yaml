@@ -12,12 +12,28 @@ components:
       cpuRequest: 1000m
       cpuLimit: 4000m
       mountSources: true
+      env:
+        - name: PATH
+          value: "/home/tooling/.sdkman/candidates/maven/current/bin:/home/tooling/.sdkman/candidates/java/current/bin:${PATH}"
+        - name: MAVEN_HOME
+          value: "/home/tooling/.sdkman/candidates/maven/current"
+        - name: JAVA_HOME
+          value: "/home/tooling/.sdkman/candidates/java/current"
+        - name: JAVA_OPTS
+          value: "-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom"
+        - name: MAVEN_OPTS
+          value: "${JAVA_OPTS}"
       volumeMounts:
         - name: config-volume
           path: /home/user/.config
+        - name: m2-volume
+          path: /home/user/.m2
   - name: config-volume 
     volume:
-      size: 512Mi      
+      size: 512Mi
+  - name: m2-volume
+    volume:
+      size: 1Gi      
 commands:
   - id: setup-jdk17
     exec:
@@ -28,7 +44,7 @@ commands:
     exec:
       label: '2. Setup Maven for Konveyor'
       component: tools
-      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-maven.sh && ./setup-maven.sh"'
+      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-maven.sh && ./setup-maven.sh && chmod +x ensure-maven-global.sh && ./ensure-maven-global.sh"'
   - id: copyconfig
     exec:
       label: '3. Configure Continue AI and Konveyor'
@@ -50,12 +66,18 @@ commands:
       component: tools
       workingDir: ${PROJECT_SOURCE}/coolstore
       commandLine: 'mvn clean install -DskipTests'
+      group:
+        kind: build
+        isDefault: true
   - id: run-coolstore
     exec:
       label: '7. Run Coolstore Application'
       component: tools
       workingDir: ${PROJECT_SOURCE}/coolstore
       commandLine: 'mvn quarkus:dev'
+      group:
+        kind: run
+        isDefault: true
   - id: deploy-k8s
     exec:
       label: '8. Deploy to Kubernetes/OpenShift'
