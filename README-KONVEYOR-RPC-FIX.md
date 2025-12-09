@@ -40,14 +40,14 @@ This will:
 Check that the processed configuration exists and is valid:
 
 ```bash
-# Check VS Code Server location (primary)
-ls -la ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml
+# Check VS Code Server location (primary - absolute path)
+ls -la /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml
 
 # Or check fallback location
 ls -la ~/.konveyor/provider-settings.yaml
 
 # Validate YAML syntax
-CONFIG_FILE="${HOME}/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml"
+CONFIG_FILE="/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml"
 if [ ! -f "${CONFIG_FILE}" ]; then
     CONFIG_FILE="${HOME}/.konveyor/provider-settings.yaml"
 fi
@@ -114,8 +114,8 @@ Instead of:
 
 3. **Manually verify config file:**
    ```bash
-   # Check VS Code Server location (primary)
-   cat ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml
+   # Check VS Code Server location (primary - absolute path)
+   cat /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml
    
    # Or check fallback location
    cat ~/.konveyor/provider-settings.yaml
@@ -153,7 +153,7 @@ To avoid this issue in the future:
 ## Current Configuration
 
 - **Source config**: `${PROJECT_SOURCE}/provider-settings.yaml` (uses placeholders)
-- **Target config (VS Code Server)**: `~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml` (primary location)
+- **Target config (VS Code Server)**: `/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml` (primary location - absolute path)
 - **Target config (fallback)**: `~/.konveyor/provider-settings.yaml` (for compatibility)
 - **Setup script**: `${PROJECT_SOURCE}/setup-konveyor-config.sh`
 - **Diagnostics**: `${PROJECT_SOURCE}/diagnose-konveyor.sh`

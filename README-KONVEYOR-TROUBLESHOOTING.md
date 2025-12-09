@@ -65,8 +65,8 @@ The API key is not being sent correctly to the LLM server. This can happen if:
 
 3. **Verify Processed Configuration:**
    ```bash
-   # Check VS Code Server location (primary)
-   cat ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml | grep -A 10 "&active"
+   # Check VS Code Server location (primary - absolute path)
+   cat /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml | grep -A 10 "&active"
    
    # Or check fallback location
    cat ~/.konveyor/provider-settings.yaml | grep -A 10 "&active"
@@ -166,7 +166,7 @@ chmod +x verify-konveyor-api-key.sh && ./verify-konveyor-api-key.sh
 ## Configuration Files
 
 - **Source Config**: `${PROJECT_SOURCE}/provider-settings.yaml` (uses placeholders)
-- **Processed Config (VS Code Server)**: `~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml` (primary location)
+- **Processed Config (VS Code Server)**: `/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml` (primary location - absolute path)
 - **Processed Config (fallback)**: `~/.konveyor/provider-settings.yaml` (for compatibility)
 - **Secret**: `${PROJECT_SOURCE}/secret.yaml` (Kubernetes secret definition)
 
@@ -176,9 +176,9 @@ chmod +x verify-konveyor-api-key.sh && ./verify-konveyor-api-key.sh
 
 - [ ] Maven is installed and in PATH (`mvn --version`)
 - [ ] Environment variables are set (`echo $LLM_SERVER_TOKEN`)
-- [ ] Configuration file exists (`ls ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
-- [ ] Configuration has no unexpanded variables (`grep '\${' ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
-- [ ] API key is in args (`grep apiKey ~/checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
+- [ ] Configuration file exists (`ls /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
+- [ ] Configuration has no unexpanded variables (`grep '\${' /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
+- [ ] API key is in args (`grep apiKey /checode/remote/data/User/globalStorage/konveyor.konveyor/settings/provider-settings.yaml`)
 - [ ] Secret is applied (`kubectl get secret openapi-api-key`)
 - [ ] Analyzer RPC server is running (check VS Code Output panel)
 

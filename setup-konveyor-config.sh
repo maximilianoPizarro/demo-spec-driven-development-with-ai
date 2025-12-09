@@ -5,7 +5,8 @@ SOURCE_CONFIG="${PROJECT_SOURCE}/provider-settings.yaml"
 
 # VS Code Server (checode) global storage location
 # This is where Konveyor extension actually reads the config from
-VSCODE_GLOBAL_STORAGE="${HOME}/checode/remote/data/User/globalStorage/konveyor.konveyor/settings"
+# Use absolute path from root, not relative to home
+VSCODE_GLOBAL_STORAGE="/checode/remote/data/User/globalStorage/konveyor.konveyor/settings"
 VSCODE_CONFIG_DIR="${VSCODE_GLOBAL_STORAGE}"
 VSCODE_TARGET_CONFIG="${VSCODE_CONFIG_DIR}/provider-settings.yaml"
 
