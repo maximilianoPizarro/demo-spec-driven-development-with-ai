@@ -14,7 +14,7 @@ models:
     args:
       model: "${LLM_SERVER_ID}"
       configuration:
-        baseURL: "https://llama-3-2-3b-maas-apicast-production.apps.prod.rhoai.rh-aiservices-bu.com:443/v1"
+        baseURL: "${LLM_SERVER_URL}"
 
   OpenAI:
     environment:
