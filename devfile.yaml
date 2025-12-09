@@ -24,38 +24,44 @@ commands:
       label: '1. Setup JDK 17'
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-jdk17.sh && ./setup-jdk17.sh"'
+  - id: setup-maven
+    exec:
+      label: '2. Setup Maven for Konveyor'
+      component: tools
+      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-maven.sh && ./setup-maven.sh"'
   - id: copyconfig
     exec:
-      label: '2. Configure Continue AI and Konveyor'
+      label: '3. Configure Continue AI and Konveyor'
       component: tools
       commandLine: 'bash -c "if [ -f ${PROJECT_SOURCE}/setup-continue-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-continue-config.sh && ./setup-continue-config.sh; else echo \"Warning: setup-continue-config.sh not found, skipping Continue config\"; fi; if [ -f ${PROJECT_SOURCE}/setup-konveyor-config.sh ]; then cd ${PROJECT_SOURCE} && chmod +x setup-konveyor-config.sh && ./setup-konveyor-config.sh; else echo \"Warning: setup-konveyor-config.sh not found, skipping Konveyor config\"; fi"'
   - id: setup-keycloak-realm
     exec:
-      label: '3. Setup Keycloak Realm'
+      label: '4. Setup Keycloak Realm'
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-keycloak-realm.sh && ./setup-keycloak-realm.sh"'
   - id: setup-wildfly-datasource
     exec:
-      label: '4. Setup WildFly Datasource'
+      label: '5. Setup WildFly Datasource'
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-wildfly-datasource.sh && ./setup-wildfly-datasource.sh"'
   - id: build-coolstore
     exec:
-      label: '5. Build Coolstore Application'
+      label: '6. Build Coolstore Application'
       component: tools
       workingDir: ${PROJECT_SOURCE}/coolstore
       commandLine: 'mvn clean install -DskipTests'
   - id: run-coolstore
     exec:
-      label: '6. Run Coolstore Application'
+      label: '7. Run Coolstore Application'
       component: tools
       workingDir: ${PROJECT_SOURCE}/coolstore
       commandLine: 'mvn quarkus:dev'
   - id: deploy-k8s
     exec:
-      label: '7. Deploy to Kubernetes/OpenShift'
+      label: '8. Deploy to Kubernetes/OpenShift'
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x deploy-k8s.sh && ./deploy-k8s.sh"'
 events:
   postStart:
+    - setup-maven
     - copyconfig
