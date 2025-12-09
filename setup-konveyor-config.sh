@@ -18,9 +18,9 @@ KONVEYOR_TARGET_CONFIG="${KONVEYOR_CONFIG_DIR}/provider-settings.yaml"
 mkdir -p "${VSCODE_CONFIG_DIR}"
 mkdir -p "${KONVEYOR_CONFIG_DIR}"
 
-# Wait for environment variables to be available (up to 30 seconds)
+# Wait for environment variables to be available (reduced to 10 seconds for faster startup)
 echo "Waiting for environment variables to be available..."
-MAX_WAIT=30
+MAX_WAIT=10
 WAIT_COUNT=0
 while [ $WAIT_COUNT -lt $MAX_WAIT ]; do
     if [ -n "${LLM_SERVER_TOKEN}" ] || [ -n "${OPENAI_API_KEY}" ]; then

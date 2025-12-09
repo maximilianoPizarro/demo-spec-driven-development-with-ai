@@ -45,6 +45,11 @@ commands:
       label: '2. Setup Maven for Konveyor'
       component: tools
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x setup-maven.sh && ./setup-maven.sh && chmod +x ensure-maven-global.sh && ./ensure-maven-global.sh"'
+  - id: quick-maven-check
+    exec:
+      label: 'Quick Maven Check'
+      component: tools
+      commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x quick-setup-maven.sh && ./quick-setup-maven.sh"'
   - id: copyconfig
     exec:
       label: '3. Configure Continue AI and Konveyor'
@@ -85,5 +90,5 @@ commands:
       commandLine: 'bash -c "cd ${PROJECT_SOURCE} && chmod +x deploy-k8s.sh && ./deploy-k8s.sh"'
 events:
   postStart:
-    - setup-maven
+    - quick-maven-check
     - copyconfig
